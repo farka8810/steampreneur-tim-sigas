@@ -23,24 +23,16 @@ Cara wawancara (langsung / lewat pesan) dan tanggal: tatap muka langsung di kios
 | Apa yang paling bapak harapkan dari sistem keamanan gas? | "Ada yang otomatis nutup katup gas pas warung tutup malam hari, dan kalau ada gas bocor langsung bunyi alarm dan nutup sendiri tanpa harus nunggu orang datang." |
 
 ## 4. Fitur wajib (hanya untuk alur inti)
-1.
-2.
-3.
+
 
 ## 5. Di luar cakupan (tidak dikerjakan dalam challenge ini)
--
+
 
 ## 6. Aturan bisnis dan perhitungan
-Tuliskan rumus atau aturan yang harus diikuti aplikasi. Contoh: "Ongkir Rp10.000, gratis jika belanja minimal Rp50.000."
--
+
 
 ## 7. Data yang disimpan
-| Data | Contoh isi | Disimpan di mana |
-|---|---|---|
-| | | |
+
 
 ## 8. Kriteria "selesai"
-Setiap kriteria harus bisa diuji (bisa dijawab ya atau tidak).
-- [ ]
-- [ ]
-- [ ]
+
