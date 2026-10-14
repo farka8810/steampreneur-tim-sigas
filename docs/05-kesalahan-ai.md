@@ -1,0 +1,10 @@
+# Kesalahan AI yang Ditemukan dan Diperbaiki
+
+Bagian ini mencatat bukti bahwa tim kami bertindak kritis sebagai *Navigator* yang memeriksa kode, bukan sekadar menerima hasil AI tanpa evaluasi (*blindly accept*).
+
+| No | Gejala / Kesalahan yang Dibuat AI | Mengapa Ini Salah | Bagaimana Tim Memperbaikinya |
+|---|---|---|---|
+| 1 | **Kesalahan Operator Batas Ambang Darurat:**  <br>AI awalnya menulis kondisi `if (ppm > 1000)` untuk status Darurat. | Jika nilai PPM tepat bernilai 1.000 (angka batas ambang resmi di spesifikasi), statusnya masih dianggap WASPADA dan katup gas tidak tertutup, padahal 1.000 PPM sudah merupakan batas pemicu tindakan darurat. | Tim mengoreksi operator menjadi `if (ppm >= 1000)` agar tepat pada angka 1.000 PPM katup langsung tertutup otomatis. |
+| 2 | **Format Angka pada Ekspor CSV:**  <br>AI awalnya memformat kolom nilai aset di CSV menggunakan `Rp` dan pemisah titik (misal: `"Rp12.500.000"`). | Format teks mata uang membuat file CSV tidak dapat langsung dihitung (SUM/AVERAGE) di Microsoft Excel atau Google Sheets. Aturan Tugas 3 mewajibkan angka murni tanpa pemisah ribuan. | Tim memodifikasi generator baris CSV agar menulis angka mentah `item.nilaiAset` (misal: `12500000`) tanpa simbol Rp atau titik pemisah. |
+| 3 | **Validasi Spasi Kosong pada Nama Kios:**  <br>AI awalnya hanya melakukan pengecekan `if (!nama)`. | Jika pengguna memasukkan spasi kosong (misalnya `"   "`), sistem AI menganggap input tersebut valid dan menyimpannya ke LocalStorage. | Tim memperketat validasi dengan menambahkan `nama.trim().length === 0` dan syarat minimal 3 karakter agar data nama kios tidak kosong. |
+| 4 | **Logika Katup Saat Jam Tutup:**  <br>AI awalnya hanya menutup katup jika konsentrasi gas mencapai Darurat, dan mengabaikan status jam operasional. | Masalah nyata yang ditemukan saat wawancara adalah kebocoran terjadi saat kios ditinggalkan semalaman. Oleh karena itu, katup harus otomatis terkunci jika status kios sudah tutup meskipun belum ada kebocoran gas. | Tim menambahkan parameter `isClosed` ke dalam fungsi `evaluasiStatusGas` sehingga katup otomatis berstatus `TERTUTUP` ketika kios tutup. |
