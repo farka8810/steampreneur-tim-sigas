@@ -30,11 +30,19 @@ Aturan:
 
 ### Penjelasan 3
 - **Ditulis oleh:** Fabian Arkananta Firmansyah (Anggota Tim)
-*(Bagian penjelasan Fabian akan diisi dan di-commit langsung oleh Fabian melalui akun GitHub pribadinya)*
+- **File dan fungsi:** `src/app.js` — Fungsi `filterDataKios(kiosList, querySearch, filterStatus)`
+- **Apa yang dilakukan:** Menyaring daftar array data kios berdasarkan kata kunci pencarian teks yang diketik pengguna dan status bahaya yang dipilih dari dropdown filter secara *real-time*.
+- **Kenapa dibuat seperti ini:** Menggunakan method `.filter()` murni yang tidak merusak data asli. Pencarian dibuat *case-insensitive* dengan menerapkan `.toLowerCase()` pada kata kunci maupun nama kios. Fitur ini dirancang terpadu sehingga pengguna dapat mencari nama kios tertentu sekaligus memfilter hanya yang berstatus DARURAT.
+- **Contoh:** jika inputnya 3 data kios, `querySearch = "rames"`, `filterStatus = "SEMUA"`, hasilnya mengembalikan 1 baris kios "Warung Rames Mbak Sri". Jika dicari `martabak` dengan filter `DARURAT`, hasilnya mengembalikan array kosong `[]` (memicu tampilan "Data tidak ditemukan").
+- **Jika input salah atau kosong:** Jika teks pencarian kosong, kondisi `!q` bernilai `true` sehingga seluruh data ditampilkan selama statusnya cocok. Jika tidak ada kecocokan, fungsi menghasilkan array kosong yang memunculkan blok pesan informatif *"Data tidak ditemukan"*.
 
 ### Penjelasan 4
 - **Ditulis oleh:** Fabian Arkananta Firmansyah (Anggota Tim)
-*(Bagian penjelasan Fabian akan diisi dan di-commit langsung oleh Fabian melalui akun GitHub pribadinya)*
+- **File dan fungsi:** `src/app.js` — Fungsi `unduhDataCsv(dataList)`
+- **Apa yang dilakukan:** Mengonversi data kios yang sedang aktif tampil di tabel menjadi format teks berkas CSV (*Comma-Separated Values*) dan memicu pengunduhan otomatis ke komputer pengguna tanpa memerlukan server backend.
+- **Kenapa dibuat seperti ini:** Sesuai permintaan Change Request (Tugas 3), format data numerik (seperti Nilai Aset dan PPM) sengaja diekspor sebagai angka murni tanpa simbol `Rp` atau titik pemisah (contoh: `12500000`), sehingga berkas langsung bisa diformulasikan (`=SUM()`, `=AVERAGE()`) saat dibuka di Microsoft Excel. Setiap teks dibungkus tanda kutip ganda agar nama kios yang memuat karakter koma tidak memecah baris kolom CSV.
+- **Contoh:** Pengguna memfilter kios DARURAT lalu klik "Unduh CSV" $\rightarrow$ peramban langsung mengunduh berkas `rekap_sigas_<timestamp>.csv` yang baris pertamanya berisi nama header kolom resmi dan hanya memuat baris data yang sedang tampil.
+- **Jika input salah atau kosong:** Jika tombol unduh diklik saat tabel kosong, sistem menampilkan alert dialog `"Tidak ada data yang dapat diunduh."` dan membatalkan pembuatan objek `Blob`.
 
 ---
 
