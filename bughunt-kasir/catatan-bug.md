@@ -8,3 +8,14 @@
 - **Penyebab:** Di fungsi `tambahItem()` pada `kasir.js`, parameter `qty` langsung dipakai tanpa diperiksa terlebih dahulu. Tidak ada pengecekan apakah `qty` itu bilangan bulat, apakah nilainya minimal 1, atau apakah tidak melebihi 99. Jadi apapun yang dimasukkan user akan diterima begitu saja.
 - **Perbaikan:** Ditambahkan pengecekan `if (!Number.isInteger(qty) || qty < 1 || qty > 99)` di awal fungsi `tambahItem()`. Jika tidak valid, fungsi melempar Error dengan pesan "Jumlah harus bilangan bulat dari 1 sampai 99".
 - **Test yang membuktikan:** `tes/bug1-validasi-qty.test.js` — menguji qty 0, negatif, pecahan, >99, dan string ditolak; qty 1 dan 99 diterima.
+
+---
+
+## Bug #2: Diskon member dan diskon belanja digabung
+
+- **Gejala:** Pelanggan member dengan subtotal di atas Rp100.000 mendapat diskon 15% (10% + 5%), padahal seharusnya hanya 10%. Contoh: subtotal Rp150.000, diskon jadi Rp22.500 (seharusnya Rp15.000).
+- **Langkah memunculkan bug:** Centang "Pelanggan member", tambahkan pesanan sampai subtotal melebihi Rp100.000 (misal Nasi Goreng x 10 = Rp150.000). Lihat nilai diskon — sebelum diperbaiki menunjukkan Rp22.500 (15%), seharusnya Rp15.000 (10%).
+- **Aturan yang dilanggar:** Aturan #4 — "Diskon tidak boleh digabung, hanya satu yang berlaku."
+- **Penyebab:** Di fungsi `hitungDiskon()` pada `kasir.js`, kedua kondisi diskon ditulis sebagai dua `if` yang berdiri sendiri (bukan `if/else if`). Akibatnya, kalau member=true DAN subtotal > 100.000, kedua blok `if` sama-sama jalan dan diskonnya ditambahkan pakai `+=`. Jadi diskonnya 5% + 10% = 15%. Padahal spesifikasi bilang diskon tidak boleh digabung.
+- **Perbaikan:** Mengubah logika menjadi `if (member) ... else if (subtotal > 100000) ...` sehingga hanya satu diskon yang berlaku. Member selalu dapat 10%, non-member dengan subtotal cukup dapat 5%.
+- **Test yang membuktikan:** `tes/bug2-diskon-digabung.test.js` — menguji member+subtotal>100rb hanya dapat 10%; non-member+subtotal>100rb dapat 5%; dsb.

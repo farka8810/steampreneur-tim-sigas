@@ -61,11 +61,10 @@ function hitungSubtotal(keranjang) {
 // Diskon belanja dan diskon member.
 function hitungDiskon(subtotal, member) {
   let diskon = 0;
-  if (subtotal > 100000) {
-    diskon += (subtotal * 5) / 100;
-  }
   if (member) {
-    diskon += (subtotal * 10) / 100;
+    diskon = (subtotal * 10) / 100;
+  } else if (subtotal > 100000) {
+    diskon = (subtotal * 5) / 100;
   }
   return Math.round(diskon);
 }
