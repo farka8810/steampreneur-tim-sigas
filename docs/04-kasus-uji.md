@@ -14,6 +14,17 @@ Bagian B diisi setelah aplikasi diuji.
 
 ---
 
+## Kasus Uji Change Request (Tugas 3)
+
+| ID | Kriteria yang diuji | Langkah / input | Hasil yang diharapkan | Hasil sebenarnya | Lulus? | Bukti (tangkapan layar) |
+|---|---|---|---|---|---|---|
+| CR01 | Pencarian Case-Insensitive | Ketik `"rames"` (huruf kecil) pada input pencarian | Hanya baris "Warung Rames Mbak Sri" yang tampil di tabel | Data langsung tersaring secara instan mencocokkan nama | Lulus | `bukti/cr01-cari-kios.png` |
+| CR02 | Filter Status Bahaya | Pilih filter dropdown `"DARURAT"` | Hanya kios berstatus DARURAT (PPM >= 1000 atau katup terkunci) yang tampil | Tabel hanya menampilkan kios status DARURAT | Lulus | `bukti/cr02-filter-darurat.png` |
+| CR03 | Empty State Data Tidak Ditemukan | Ketik `"martabak"` dengan filter status `"DARURAT"` | Menampilkan pesan *"Data tidak ditemukan"* | Tampil ikon 📭 dan teks "Data tidak ditemukan." | Lulus | `bukti/cr03-data-tidak-ditemukan.png` |
+| CR04 | Format Angka Ekspor CSV | Klik tombol "Unduh CSV" saat data tersaring tampil | File `.csv` terunduh, kolom Nilai Aset berupa angka murni (`12500000`) dan bisa diformulasikan di Excel | CSV terunduh dengan header dan angka numerik tanpa simbol Rp | Lulus | `bukti/cr04-ekspor-csv.png` |
+
+---
+
 ## Unit Test Otomatis
 
 * **Nama file test:** `tes/sigas.test.js`
@@ -25,4 +36,4 @@ Bagian B diisi setelah aplikasi diuji.
   3. Logika status batas Waspada (== 400)
   4. Logika status batas Darurat (== 1000) dan penutupan katup
   5. Perhitungan formula matematis Rasio Proteksi Aset
-  6. Filter pencarian dan penyaringan kategori kios
+  6. Change Request: filter pencarian case-insensitive, filter status bahaya, kombinasi, dan kondisi data kosong

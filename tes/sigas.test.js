@@ -9,6 +9,7 @@ const {
     validasiInputKios,
     evaluasiStatusGas,
     hitungRasioProteksi,
+    filterDataKios,
     getSampleData
 } = require('../src/app.js');
 
@@ -60,5 +61,29 @@ test('5. Numerasi Finansial: Menghitung Rasio Proteksi Aset secara presisi', () 
     // Nilai aset Rp8.500.000 -> 850.000 / 8.500.000 * 100 = 10.0%
     const rasio2 = hitungRasioProteksi(8500000);
     assert.strictEqual(rasio2, 10.0);
+});
+
+test('6. Change Request: Pencarian case-insensitive, filter status, dan penanganan data kosong', () => {
+    const dummyData = getSampleData(); // 3 kios bawaan
+
+    // CR-01: Pencarian case-insensitive (huruf kecil 'rames' mencocokkan 'Warung Rames Mbak Sri')
+    const resSearch = filterDataKios(dummyData, 'rames', 'SEMUA');
+    assert.strictEqual(resSearch.length, 1);
+    assert.strictEqual(resSearch[0].nama, 'Warung Rames Mbak Sri');
+
+    // CR-02: Filter status bahaya DARURAT
+    const resStatus = filterDataKios(dummyData, '', 'DARURAT');
+    assert.strictEqual(resStatus.length, 1);
+    assert.strictEqual(resStatus[0].statusBahaya, 'DARURAT');
+    assert.strictEqual(resStatus[0].nama, 'Kios Mie & Bakso Barokah');
+
+    // CR-03: Kombinasi pencarian & filter yang tidak cocok (Empty State: 'Data tidak ditemukan')
+    const resEmpty = filterDataKios(dummyData, 'martabak', 'DARURAT');
+    assert.strictEqual(resEmpty.length, 0);
+
+    // CR-04: Filter kombinasi pencarian kata dan status
+    const resKombinasi = filterDataKios(dummyData, 'bakso', 'DARURAT');
+    assert.strictEqual(resKombinasi.length, 1);
+    assert.strictEqual(resKombinasi[0].nama, 'Kios Mie & Bakso Barokah');
 });
 
