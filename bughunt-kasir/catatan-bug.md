@@ -41,3 +41,13 @@
 - **Test yang membuktikan:** `tes/bug4-ppn-pembulatan.test.js` — menguji PPN dari dasar 50 (hasilnya 6, bukan 5), dasar 150 (hasilnya 17, bukan 16).
 - **Commit perbaikan:** `perbaikan: PPN dibulatkan ke rupiah terdekat (Math.round bukan Math.floor)`
 - **Ditemukan oleh:** bersama
+
+## Bug 5
+- **Gejala:** Jika uang yang dibayar kurang dari total, aplikasi tetap menampilkan kembalian (bernilai negatif) tanpa pesan error. Contoh: total Rp50.000, bayar Rp40.000 → tampil "Kembalian: -Rp10.000".
+- **Langkah untuk memunculkan bug:** Tambahkan pesanan ke keranjang, lalu isi uang bayar dengan jumlah yang lebih kecil dari total, klik "Bayar". Aplikasi menampilkan kembalian negatif tanpa error.
+- **Aturan bisnis yang dilanggar:** Aturan #7 — "Jika uang yang dibayar kurang dari total, transaksi ditolak dengan pesan 'Uang pembayaran kurang'."
+- **Penyebab:** File `kasir.js`, fungsi `hitungKembalian()`. Fungsi langsung menghitung `bayar - total` tanpa memeriksa terlebih dahulu apakah `bayar >= total`. Tidak ada pengecekan apapun, sehingga kalau bayar kurang, hasilnya jadi negatif dan tidak ada error yang dilempar.
+- **Perbaikan:** Ditambahkan pengecekan `if (bayar < total) { throw new Error("Uang pembayaran kurang"); }` di awal fungsi sebelum menghitung kembalian.
+- **Test yang membuktikan:** `tes/bug5-uang-kurang.test.js` — menguji bayar kurang ditolak dengan error; bayar tepat kembalian 0; bayar lebih kembalian benar.
+- **Commit perbaikan:** `perbaikan: tolak pembayaran jika uang kurang dari total`
+- **Ditemukan oleh:** bersama

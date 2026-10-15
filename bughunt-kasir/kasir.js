@@ -84,6 +84,9 @@ function hitungRingkasan(keranjang, member) {
 }
 
 function hitungKembalian(total, bayar) {
+  if (bayar < total) {
+    throw new Error("Uang pembayaran kurang");
+  }
   return bayar - total;
 }
 
