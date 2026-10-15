@@ -61,3 +61,13 @@
 - **Test yang membuktikan:** `tes/bug6-qty-string.test.js` — menguji qty string ditolak; qty number diterima; penambahan qty produk sama menghasilkan penjumlahan bukan concatenation.
 - **Commit perbaikan:** `perbaikan: konversi qty dari string ke number sebelum dikirim ke tambahItem`
 - **Ditemukan oleh:** bersama
+
+## Bug 7
+- **Gejala:** Saat produk yang sudah ada di keranjang ditambahkan lagi, total qty bisa melebihi 99 tanpa pesan error. Misal Es Teh sudah 90, lalu tambah 20 → jadi 110.
+- **Langkah untuk memunculkan bug:** Tambahkan Es Teh dengan jumlah 90, lalu tambahkan Es Teh lagi dengan jumlah 20. Qty di keranjang menjadi 110, padahal batas maksimal adalah 99.
+- **Aturan bisnis yang dilanggar:** Aturan #2 — "Total jumlah per produk tetap tidak boleh lebih dari 99."
+- **Penyebab:** File `kasir.js`, fungsi `tambahItem()`. Saat produk sudah ada di keranjang, qty langsung dijumlahkan dengan `itemLama.qty += qty` tanpa memeriksa apakah hasil penjumlahannya melebihi 99. Validasi qty di awal fungsi hanya mengecek qty yang baru dimasukkan (1-99), bukan total setelah digabung.
+- **Perbaikan:** Sebelum mengubah qty, hitung dulu `qtyBaru = itemLama.qty + qty`, lalu cek `if (qtyBaru > 99)` maka tolak dengan error "Total jumlah per produk tidak boleh lebih dari 99". Baru setelah lolos pengecekan, set `itemLama.qty = qtyBaru`.
+- **Test yang membuktikan:** `tes/bug7-qty-merge-limit.test.js` — menguji merge 90+20 ditolak; merge 50+49=99 diterima; merge 50+50=100 ditolak.
+- **Commit perbaikan:** `perbaikan: cek total qty saat merge produk sama tidak boleh lebih dari 99`
+- **Ditemukan oleh:** bersama
