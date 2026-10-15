@@ -100,6 +100,74 @@ function hitungRasioProteksi(nilaiAset) {
     return Number(rasio.toFixed(1));
 }
 
+/**
+ * Menyaring data kios berdasarkan kata kunci pencarian (nama atau kategori) dan status bahaya.
+ * Memenuhi Kriteria Penerimaan Change Request 1 & 2:
+ * 1. Pencarian teks bersifat case-insensitive.
+ * 2. Filter status dapat dikombinasikan dengan pencarian secara simultan.
+ */
+function filterDataKios(kiosList, querySearch = '', filterStatus = 'SEMUA') {
+    if (!Array.isArray(kiosList)) return [];
+    const q = (querySearch || '').trim().toLowerCase();
+    const status = (filterStatus || 'SEMUA').toUpperCase();
+
+    return kiosList.filter(item => {
+        const nama = (item.nama || '').toLowerCase();
+        const kategori = (item.kategori || '').toLowerCase();
+        const matchQuery = !q || nama.includes(q) || kategori.includes(q);
+        const matchStatus = (status === 'SEMUA') || (item.statusBahaya === status);
+        return matchQuery && matchStatus;
+    });
+}
+
+/**
+ * Mengunduh data kios yang sedang tampil ke dalam format file CSV.
+ * Memenuhi Kriteria Penerimaan Change Request 4 & 5:
+ * 1. Baris pertama berisi nama kolom (header).
+ * 2. Nilai numerik diekspor murni tanpa format mata uang atau pemisah ribuan (contoh: 12500000).
+ */
+function unduhDataCsv(dataList) {
+    if (!Array.isArray(dataList) || dataList.length === 0) {
+        alert('Tidak ada data yang dapat diunduh.');
+        return;
+    }
+    const headers = [
+        'ID_Kios',
+        'Nama_Kios',
+        'Kategori',
+        'Nilai_Aset',
+        'Jam_Tutup',
+        'Bacaan_PPM',
+        'Status_Bahaya',
+        'Kondisi_Katup',
+        'Rasio_Proteksi_Persen',
+        'Tanggal_Pemeriksaan'
+    ];
+
+    const rows = dataList.map(item => [
+        item.id,
+        `"${(item.nama || '').replace(/"/g, '""')}"`,
+        `"${item.kategori || ''}"`,
+        Number(item.nilaiAset) || 0,
+        item.jamTutup || '',
+        Number(item.ppm) || 0,
+        item.statusBahaya || '',
+        item.statusKatup || '',
+        Number(item.rasioProteksi) || 0,
+        `"${item.createdAt || ''}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `rekap_sigas_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
 
 // -------------------------------------------------------------
 // 2. MANIPULASI DOM & EVENT LISTENER (Di Lingkungan Browser)
@@ -137,9 +205,35 @@ if (typeof document !== 'undefined') {
         const evalRasio = document.getElementById('eval-rasio');
         const evalFormula = document.getElementById('eval-formula-text');
 
-        // Elemen Tombol
+        // Elemen Tombol & Toolbar (Change Request)
         const btnSeedData = document.getElementById('btn-seed-data');
         const btnClearAll = document.getElementById('btn-clear-all');
+        const searchInput = document.getElementById('search-input');
+        const filterStatus = document.getElementById('filter-status');
+        const btnExportCsv = document.getElementById('btn-export-csv');
+
+        // Event Listener Toolbar: Pencarian Real-time & Filter Status
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                renderTable();
+            });
+        }
+
+        if (filterStatus) {
+            filterStatus.addEventListener('change', () => {
+                renderTable();
+            });
+        }
+
+        // Event Listener Toolbar: Unduh CSV
+        if (btnExportCsv) {
+            btnExportCsv.addEventListener('click', () => {
+                const query = searchInput ? searchInput.value : '';
+                const status = filterStatus ? filterStatus.value : 'SEMUA';
+                const currentData = filterDataKios(records, query, status);
+                unduhDataCsv(currentData);
+            });
+        }
 
         // Update live preview saat input PPM atau Nilai Aset berubah
         function updateLivePreview() {
@@ -268,15 +362,26 @@ if (typeof document !== 'undefined') {
             }
         });
 
-        // Render Functions (Versi 1.0 Alur Inti - Checkpoint 2)
+        // Render Functions (Change Request: Pencarian, Filter & Tampilan Kosong)
         function renderTable() {
             const tbody = document.getElementById('table-body');
             const emptyState = document.getElementById('empty-state');
+            const emptyMessage = document.getElementById('empty-message');
+
+            const query = searchInput ? searchInput.value : '';
+            const status = filterStatus ? filterStatus.value : 'SEMUA';
+
+            const filtered = filterDataKios(records, query, status);
 
             tbody.innerHTML = '';
 
-            if (records.length === 0) {
+            if (filtered.length === 0) {
                 emptyState.style.display = 'block';
+                if (records.length === 0) {
+                    emptyMessage.textContent = 'Belum ada data kios. Silakan tambahkan kios baru atau klik "Muat Contoh Data".';
+                } else {
+                    emptyMessage.textContent = 'Data tidak ditemukan.';
+                }
                 return;
             } else {
                 emptyState.style.display = 'none';
@@ -325,7 +430,7 @@ if (typeof document !== 'undefined') {
         }
 
         // Global Delete
-        window.hapusKios = function(id) {
+        window.hapusKios = function (id) {
             records = records.filter(r => r.id !== id);
             saveRecords(records);
             renderTable();
@@ -428,7 +533,7 @@ if (typeof module !== 'undefined' && module.exports) {
         validasiInputKios,
         evaluasiStatusGas,
         hitungRasioProteksi,
+        filterDataKios,
         getSampleData
     };
 }
-

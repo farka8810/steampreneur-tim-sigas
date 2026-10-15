@@ -194,16 +194,30 @@
                 </section>
             </div>
 
-            <!-- Section 3: Records & Log Table (Versi 1.0 Alur Inti - Checkpoint 2) -->
+            <!-- Section 3: Records & Log Table (Change Request: Pencarian, Filter, & Ekspor CSV) -->
             <section class="card table-card">
                 <div class="card-header table-header">
                     <div>
                         <h2>Daftar Rekapitulasi Pemantauan Kios</h2>
                         <p class="card-desc">Data tersimpan di penyimpanan lokal (*LocalStorage*) dan diperbarui secara otomatis.</p>
                     </div>
-                    <div class="table-actions-header">
-                        <button id="btn-clear-all" class="btn btn-outline-danger" title="Kosongkan Semua Data">
-                            Hapus Semua Data
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <input type="text" id="search-input" placeholder="🔍 Cari nama kios atau kategori...">
+                        </div>
+                        <div class="filter-box">
+                            <select id="filter-status">
+                                <option value="SEMUA">Semua Status Gas</option>
+                                <option value="NORMAL">Normal Saja</option>
+                                <option value="WASPADA">Waspada Saja</option>
+                                <option value="DARURAT">Darurat Saja</option>
+                            </select>
+                        </div>
+                        <button id="btn-export-csv" class="btn btn-secondary btn-sm" title="Unduh Data Rekap ke File CSV (Excel)">
+                            📥 Unduh CSV
+                        </button>
+                        <button id="btn-clear-all" class="btn btn-outline-danger btn-sm" title="Kosongkan Semua Data">
+                            Hapus Semua
                         </button>
                     </div>
                 </div>
