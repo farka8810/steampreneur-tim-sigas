@@ -51,3 +51,13 @@
 - **Test yang membuktikan:** `tes/bug5-uang-kurang.test.js` — menguji bayar kurang ditolak dengan error; bayar tepat kembalian 0; bayar lebih kembalian benar.
 - **Commit perbaikan:** `perbaikan: tolak pembayaran jika uang kurang dari total`
 - **Ditemukan oleh:** bersama
+
+## Bug 6
+- **Gejala:** Saat menambahkan pesanan lewat form di browser, jumlah yang dimasukkan tidak pernah diterima (selalu error setelah fix Bug #1), atau tanpa validasi: jumlah produk yang sama digabung jadi string (misal Es Teh "2" + "3" = "23" bukan 5).
+- **Langkah untuk memunculkan bug:** Buka aplikasi di browser, pilih produk, isi jumlah 3, klik Tambah. Setelah fix Bug #1, akan selalu ditolak karena "3" (string) gagal lolos `Number.isInteger("3")`. Tanpa fix Bug #1, tambah Es Teh 2 lalu Es Teh 3 → qty jadi "23" bukan 5.
+- **Aturan bisnis yang dilanggar:** Aturan #1 dan #2 — qty harus integer dan penambahan produk sama harus dijumlahkan.
+- **Penyebab:** File `app.js`, baris 65. `elQty.value` dari input HTML selalu bertipe string (misal `"3"`), tapi langsung dikirim ke `tambahItem()` tanpa dikonversi ke number dulu. Fungsi `tambahItem()` mengharapkan parameter `qty` bertipe number.
+- **Perbaikan:** Mengubah `tambahItem(keranjang, elProduk.value, elQty.value)` menjadi `tambahItem(keranjang, elProduk.value, Number(elQty.value))` agar qty dikonversi dari string ke number.
+- **Test yang membuktikan:** `tes/bug6-qty-string.test.js` — menguji qty string ditolak; qty number diterima; penambahan qty produk sama menghasilkan penjumlahan bukan concatenation.
+- **Commit perbaikan:** `perbaikan: konversi qty dari string ke number sebelum dikirim ke tambahItem`
+- **Ditemukan oleh:** bersama
