@@ -63,7 +63,7 @@ function hitungDiskon(subtotal, member) {
   let diskon = 0;
   if (member) {
     diskon = (subtotal * 10) / 100;
-  } else if (subtotal > 100000) {
+  } else if (subtotal >= 100000) {
     diskon = (subtotal * 5) / 100;
   }
   return Math.round(diskon);

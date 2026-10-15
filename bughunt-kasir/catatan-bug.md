@@ -19,3 +19,14 @@
 - **Penyebab:** Di fungsi `hitungDiskon()` pada `kasir.js`, kedua kondisi diskon ditulis sebagai dua `if` yang berdiri sendiri (bukan `if/else if`). Akibatnya, kalau member=true DAN subtotal > 100.000, kedua blok `if` sama-sama jalan dan diskonnya ditambahkan pakai `+=`. Jadi diskonnya 5% + 10% = 15%. Padahal spesifikasi bilang diskon tidak boleh digabung.
 - **Perbaikan:** Mengubah logika menjadi `if (member) ... else if (subtotal > 100000) ...` sehingga hanya satu diskon yang berlaku. Member selalu dapat 10%, non-member dengan subtotal cukup dapat 5%.
 - **Test yang membuktikan:** `tes/bug2-diskon-digabung.test.js` — menguji member+subtotal>100rb hanya dapat 10%; non-member+subtotal>100rb dapat 5%; dsb.
+
+---
+
+## Bug #3: Batas diskon non-member pakai `>` seharusnya `>=`
+
+- **Gejala:** Non-member dengan subtotal tepat Rp100.000 tidak mendapat diskon 5%, padahal seharusnya dapat. Diskon baru muncul jika subtotal Rp100.001 ke atas.
+- **Langkah memunculkan bug:** Jangan centang member. Tambahkan pesanan dengan subtotal tepat Rp100.000 (misal Nasi Goreng x 5 = Rp75.000 + Mie Ayam x 1 = Rp13.500 + Roti Bakar x 1 = Rp10.500 + Air Mineral x 1 = Rp3.500 — total sebenarnya perlu disesuaikan, atau langsung test fungsi `hitungDiskon(100000, false)`). Diskon menunjukkan Rp0, seharusnya Rp5.000.
+- **Aturan yang dilanggar:** Aturan #4 — "Bukan member dengan subtotal **minimal** Rp100.000 mendapat diskon 5%." Kata "minimal" berarti termasuk tepat Rp100.000.
+- **Penyebab:** Di fungsi `hitungDiskon()`, kondisi untuk diskon non-member ditulis `subtotal > 100000` (lebih besar dari). Operator `>` artinya 100.000 tidak termasuk. Padahal spesifikasi bilang "minimal Rp100.000" yang berarti harus pakai `>=` (lebih besar atau sama dengan).
+- **Perbaikan:** Mengubah `subtotal > 100000` menjadi `subtotal >= 100000` di fungsi `hitungDiskon()`.
+- **Test yang membuktikan:** `tes/bug3-batas-diskon.test.js` — menguji subtotal tepat 100.000 dapat diskon 5%; subtotal 99.999 tidak dapat diskon.
