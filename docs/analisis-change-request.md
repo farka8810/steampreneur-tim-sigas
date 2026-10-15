@@ -48,7 +48,7 @@ Isi bagian ini **sebelum** mengubah kode, lalu commit dan push (contoh pesan: `d
 ---
 
 ## 3. Setelah selesai
-- [ ] Kasus uji lama tetap lulus
-- [ ] Kasus uji baru lulus
-- [ ] Spesifikasi diperbarui
-- [ ] README diperbarui
+- [x] Kasus uji lama tetap lulus
+- [x] Kasus uji baru lulus
+- [x] Spesifikasi diperbarui
+- [x] README diperbarui
